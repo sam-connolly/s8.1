@@ -11,7 +11,7 @@ EventQueue eventqueue;
 C12832 lcd(D11, D13, D12, D7, D10);
 
 /* YOU will have to hardwire the IP address in here */
-SocketAddress server("192.168.1.13",65280);
+SocketAddress server("192.168.60.10",65280);
 EthernetInterface eth;
 UDPSocket udp;
 char buffer[512];
@@ -40,11 +40,15 @@ void controller(void) {
     lcd.locate(0,0);
     lcd.printf(buffer);
     sscanf(buffer,"temperature:%f", &T);
-    if ( T<20 ) {
+    lcd.locate(0,15);
+    lcd.printf("Setting: %f", right.read()*20+10);
+
+    AnalogIn right(A1);
+    if ( T<right.read()*20+10) {
         strcpy(buffer,"heating:on\n");
         send(buffer, strlen(buffer));
     }
-    if ( T>20 ) {
+    if ( T>right.read()*20+10) {
         strcpy(buffer,"heating:off\n");
         send(buffer, strlen(buffer));
     }
